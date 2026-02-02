@@ -42,6 +42,34 @@ app.get('/products/:id', (req, res) => {
     }
 });
 
+//POST - Agregar un nuevo producto
+app.post('/products', (req, res) => {
+    const newProduct = req.body;
+    newProduct.id = products.length + 1; // Asignar un nuevo ID
+    products.push(newProduct);
+    res.status(201).json({ message: "Producto agregado", product: newProduct });
+});
+
+//PUT - Actualizar un producto existente
+app.put('/products/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    const {name, price} = req.body;
+    const product = products.find(p => p.id === productId);
+    if (!product) return res.status(404).json({ error: "Producto no encontrado" });
+    product.name = name || product.name;
+    product.price = price || product.price;
+    res.status(200).json({ message: "Producto actualizado", product: product });
+});
+
+//DELETE - Eliminar un producto existente
+app.delete('/products/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    const product = products.find(p => p.id === productId);
+    if (!product) return res.status(404).json({ error: "Producto no encontrado" });
+    products = products.filter(p => p.id !== productId);
+    res.status(204).send(); // No content
+});
+
 //Iniciar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en el puerto http://localhost:${PORT}`);
